@@ -10,7 +10,7 @@ WORKDIR $HOME
 ADD . $HOME
 
 # 4. 使用缓存构建项目
-RUN --mount=type=cache,target=/root/.m2 mvn -f $HOME/pom.xml clean package
+RUN mvn -f $HOME/pom.xml clean package
 
 # 5. 创建运行时镜像
 FROM openjdk:17-slim
