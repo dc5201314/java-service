@@ -1,7 +1,7 @@
 # 构建阶段
 FROM openjdk:17-slim AS build
 
-# 环境变量和工作目录
+# 设置工作目录
 ENV HOME=/usr/app
 RUN mkdir -p $HOME
 WORKDIR $HOME
@@ -13,12 +13,14 @@ ADD . $HOME
 RUN chmod +x ./mvnw
 
 # 使用缓存构建项目
-RUN --mount=type=cache,target=/root/.m2 ./mvnw -f $HOME/pom.xml clean package
+RUN ./mvnw -f $HOME/pom.xml clean package
 
 # 打包阶段
 FROM openjdk:17-slim
-ARG JAR_FILE=target/*.jar
-COPY --from=build $HOME/$JAR_FILE /app/runner.jar
+WORKDIR /app
+
+# 复制生成的 JAR 文件
+COPY --from=build /usr/app/target/java-service-0.0.1-SNAPSHOT.jar /app/runner.jar
 
 # 暴露端口和启动命令
 EXPOSE 8081
